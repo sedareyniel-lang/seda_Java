@@ -1,0 +1,128 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication3;
+import java.util.Scanner;
+/**
+ *
+ * @author BED
+ */
+public class JavaApplication3 {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        // TODO code application logic here
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Enter “exit” to quit or press Enter to continue …");
+            String sentinel = scanner.nextLine().trim();
+            if (sentinel.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting program. Goodbye!");
+                break;
+            }
+
+            // Input: age
+            System.out.print("Enter age of the customer: ");
+            int age;
+            try {
+                age = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid age. Please try again.\n");
+                continue;
+            }
+
+            // Input: day of week
+            System.out.print("Enter day of the week (e.g. Monday, Tuesday, ...): ");
+            String dayOfWeek = scanner.nextLine().trim();
+
+            // Input: number of tickets
+            System.out.print("Enter number of tickets: ");
+            int numTickets;
+            try {
+                numTickets = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number of tickets. Please try again.\n");
+                continue;
+            }
+            if (numTickets <= 0) {
+                System.out.println("Number of tickets must be positive. Please try again.\n");
+                continue;
+            }
+
+            double basePrice = 200.0;
+
+            // Determine effective ticket price per person after discount (if any)
+            double effectivePricePerTicket = basePrice;
+            String discountApplied = "None";
+
+            // Check “free if < 7 years old”
+            if (age < 7) {
+                effectivePricePerTicket = 0.0;
+                discountApplied = "Free (age < 7)";
+            } else {
+                // If not free, check between senior discount (≥ 60) and Wednesday discount
+                boolean isSenior = (age >= 60);
+                boolean isWednesday = dayOfWeek.equalsIgnoreCase("Wednesday");
+
+                double priceWithSeniorDiscount = basePrice;
+                if (isSenior) {
+                    priceWithSeniorDiscount = basePrice * 0.8;  // 20% off
+                }
+                double priceWithWednesdayDiscount = basePrice;
+                if (isWednesday) {
+                    priceWithWednesdayDiscount = basePrice * 0.5;  // 50% off
+                }
+
+                // Choose whichever gives the bigger discount (i.e. lower price)
+                if (isSenior && isWednesday) {
+                    // compare senior discount vs Wednesday discount
+                    if (priceWithWednesdayDiscount < priceWithSeniorDiscount) {
+                        effectivePricePerTicket = priceWithWednesdayDiscount;
+                        discountApplied = "Wednesday 50% discount";
+                    } else {
+                        effectivePricePerTicket = priceWithSeniorDiscount;
+                        discountApplied = "Senior 20% discount";
+                    }
+                } else if (isWednesday) {
+                    effectivePricePerTicket = priceWithWednesdayDiscount;
+                    discountApplied = "Wednesday 50% discount";
+                } else if (isSenior) {
+                    effectivePricePerTicket = priceWithSeniorDiscount;
+                    discountApplied = "Senior 20% discount";
+                }
+                // else stays at base price, discount "None"
+            }
+
+            // Compute total before the extra discount
+            double total = effectivePricePerTicket * numTickets;
+
+            // After calculating the total price: if total < 1000, extra 10% discount
+            boolean extraDiscountApplied = false;
+            if (total < 1000 && total > 0) {
+                double discounted = total * 0.9;  // 10% off
+                total = discounted;
+                extraDiscountApplied = true;
+            }
+
+            // If total price is less than 200, print “Minimum purchase not reached”
+            if (total < 200) {
+                System.out.println("Minimum purchase not reached.");
+            }
+
+            // Output breakdown
+            System.out.println("----- Ticket Summary -----");
+            System.out.printf("Number of tickets: %d%n", numTickets);
+            System.out.printf("Ticket price (per ticket): %.2f%n", effectivePricePerTicket);
+            System.out.println("Discount applied (if any): " + discountApplied + (extraDiscountApplied ? " + extra 10%" : ""));
+            System.out.printf("Final amount to pay: %.2f%n", total);
+            System.out.println("---------------------------\n");
+        }
+
+        scanner.close();
+    }
+}
+   
